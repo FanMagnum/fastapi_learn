@@ -3,6 +3,8 @@ import operator
 import re
 from functools import reduce
 from pprint import pprint
+
+import motor.motor_asyncio
 import pymongo
 import requests
 from bs4 import BeautifulSoup
@@ -165,14 +167,15 @@ def handle_app_info(app):
     return handled_app
 
 
-def get_one_app(app, update):
-    client = pymongo.MongoClient(host=settings.MONGO_HOST)
+async def get_one_app(app, update):
+    # client = pymongo.MongoClient(host=settings.MONGO_HOST)
+    client = motor.motor_asyncio.AsyncIOMotorClient(host=settings.MONGO_HOST)
     try:
         db = client.cves
         collection = db.spider
         # 应用名称、版本确定唯一一条数据
         query = {'product': app.get('product'), 'version': app.get('version'), 'vendor': app.get('vendor')}
-        res = collection.find_one(query)
+        res = await collection.find_one(query)
         # print(f'get_one_app res: {res}')
         if res is None or update:
             # 没有记录，启动爬虫
@@ -202,9 +205,9 @@ def get_one_app(app, update):
             # 数据入库
             if update:
                 new = {"$set": res}
-                collection.update_one(query, new)
+                await collection.update_one(query, new)
             else:
-                collection.insert_one(res)
+                await collection.insert_one(res)
             print(f'{res["product"]} spider res: {res}')
             print('======================================================================================>Running over')
             return res
@@ -223,11 +226,11 @@ def get_one_app(app, update):
         client.close()
 
 
-def get_all_app(apps, update):
+async def get_all_app(apps, update):
     res = []
     for app in apps:
         print(f'before handle app info: {app}')
-        res.append(get_one_app(app, update))
+        res.append(await get_one_app(app, update))
     # with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
     #     res.extend(executor.map(get_one_app, apps))
     return res
@@ -256,7 +259,7 @@ def get_all_app(apps, update):
 #     conn.close()
 
 
-def spider(data):
+async def spider(data):
     # 爬取数据
     # 更新数据到postgreSQL
     # 失败自动重试
@@ -268,7 +271,7 @@ def spider(data):
     res = {"apps": []}
     while length > 0:
         tmp = data.get('apps')[start:end]
-        res['apps'].extend(get_all_app(tmp, update))
+        res['apps'].extend(await get_all_app(tmp, update))
         start = end
         end += 20
         length -= 20

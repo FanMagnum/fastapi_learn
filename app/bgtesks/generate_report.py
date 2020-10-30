@@ -2,19 +2,21 @@ import json
 from os import path
 from pprint import pprint
 
+import motor.motor_asyncio
 from pymongo import MongoClient
 
 from app.core.config import settings
 
 
-def data2file():
-    client = MongoClient(host=settings.MONGO_HOST)
+async def data2file():
+    # client = MongoClient(host=settings.MONGO_HOST)
+    client = motor.motor_asyncio.AsyncIOMotorClient(host=settings.MONGO_HOST)
     current_path = path.dirname(__file__)
     try:
         db = client.cves
         collection = db.spider
 
-        apps = collection.find()
+        apps = await collection.find()
         data = []
         for app in apps:
             tmp = app
