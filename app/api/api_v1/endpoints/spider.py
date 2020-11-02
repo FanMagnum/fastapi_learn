@@ -1,45 +1,35 @@
 import random
 import uuid
 import motor.motor_asyncio
-import pymongo
+from odmantic import AIOEngine
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from app.bgtesks.generate_report import data2file
-from app.bgtesks.nvd_spider import spider
+from app.bgtasks.generate_report import data2file
+from app.bgtasks.nvd_spider import spider
+from app.core.celery_app import celery_app
 from app.core.config import settings
+from app.models.task_id import TaskId
 from app.schemas.apps import Data, SpiderResponse
 
 router = APIRouter()
 
 
 async def store_task_id(task_id):
-    # client = pymongo.MongoClient(host=settings.MONGO_HOST)
     client = motor.motor_asyncio.AsyncIOMotorClient(host=settings.MONGO_HOST)
-    try:
-        db = client.cves
-        collection = db.taskId
-        await collection.insert_one({"task_id": task_id})
-    finally:
-        client.close()
+    engine = AIOEngine(motor_client=client, database='cves')
+    task = TaskId(task_id=task_id)
+    await engine.save(task)
 
 
 async def find_task_id(task_id):
-    # client = pymongo.MongoClient(host=settings.MONGO_HOST)
     client = motor.motor_asyncio.AsyncIOMotorClient(host=settings.MONGO_HOST)
-    try:
-        db = client.cves
-        collection = db.taskId
-        query = {"task_id": task_id}
-        res = await collection.find_one(query)
-        if res:
-            # find and del
-            id = res["_id"]
-            await collection.remove(id)
-            return True
-        return False
-    finally:
-        client.close()
+    engine = AIOEngine(motor_client=client, database='cves')
+    task = await engine.find_one(TaskId, TaskId.task_id == task_id)
+    if task:
+        await engine.delete(task)
+        return True
+    return False
 
 
 @router.post(
@@ -63,7 +53,8 @@ async def start_spider(
         - **version**: app version
         - **vendor**: app vendor
     """
-    background_task.add_task(spider, jsonable_encoder(data))
+    task = celery_app.send_task("app.bgtasks.nvd_spider.spider",
+                                args=[jsonable_encoder(data)])
     uid = str(uuid.uuid4())
     task_id = ''.join(uid.split('-'))
     await store_task_id(task_id)
