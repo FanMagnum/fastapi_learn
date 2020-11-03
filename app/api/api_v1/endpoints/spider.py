@@ -1,4 +1,3 @@
-import random
 import uuid
 import motor.motor_asyncio
 from odmantic import AIOEngine
@@ -6,7 +5,6 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from app.bgtasks.generate_report import data2file
-from app.bgtasks.nvd_spider import spider
 from app.core.celery_app import celery_app
 from app.core.config import settings
 from app.models.task_id import TaskId
@@ -42,8 +40,7 @@ async def find_task_id(task_id):
 )
 async def start_spider(
         *,
-        data: Data,
-        background_task: BackgroundTasks
+        data: Data
 ):
     """
     Start spider for apps with below information:

@@ -1,8 +1,6 @@
-import concurrent.futures
 import operator
 import re
 from functools import reduce
-from pprint import pprint
 import pymongo
 import requests
 from bs4 import BeautifulSoup
@@ -206,7 +204,7 @@ def get_one_app(app, update):
                 collection.update_one(query, new, upsert=True)
             else:
                 collection.insert_one(res)
-            print(f'{res["product"]} spider res: {res}')
+            # print(f'{res["product"]} spider res: {res}')
             print('======================================================================================>Running over')
             return res
         else:
@@ -251,64 +249,4 @@ def spider(data):
         start = end
         end += 20
         length -= 20
-        # print(f"length: {length}")
-    # print(f'collect app count: {len(res["apps"])}')
-    # print('=====================================Result=================================================')
-    # pprint(res['apps'])
-    # count = 0
-    # for app in res['apps']:
-    #     if app['cves']:
-    #         count += 1
-    # print(f'Collect count: {count}')
-    # write_data_to_db(res)
 
-
-if __name__ == '__main__':
-    data = {
-        "apps": [
-
-        ]
-    }
-
-    url = 'http://10.176.48.180:8080/api/software_risk/apps/software/'
-
-    headers = {
-        "Authorization": "Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjAzMjQ0ODcwL"
-                         "CJleHAiOjE2MDM2NzY4NzAsInVzZXJfaWQiOjMsIm9yaWdfaWF0IjoxNjAzMjQ0ODcwfQ.pJx1Xmu7KYMKJuonK0b1aA"
-                         "yPSSOq3KKGW0kXFPwR1JU"
-    }
-
-    params = {
-        "page": 1,
-        "page_size": 100
-    }
-    r = requests.get(url, headers=headers, params=params)
-    response_data = r.json()
-    count = response_data['count']
-    results = response_data['results']
-    for result in results:
-        tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
-        data['apps'].append(tmp)
-    pages = count // 100 + 1
-    for page in range(2, pages + 1):
-        params = {
-            "page": page,
-            "page_size": 100
-        }
-        r = requests.get(url, headers=headers, params=params)
-        response_data = r.json()
-        # count = response_data['count']
-        results = response_data['results']
-        for result in results:
-            tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
-            data['apps'].append(tmp)
-
-    # pprint(data)
-    # print(len(data['apps']))
-    data['update'] = True
-    print(f'data: {data}')
-    import time
-
-    start = time.time()
-    spider(data)
-    print(f"Total running time: {time.time() - start}")
