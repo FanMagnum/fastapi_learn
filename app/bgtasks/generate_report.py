@@ -20,7 +20,8 @@ async def data2file():
         print(tmp)
         tmp.pop('id')
         if app.cves:
-            tmp["cve_count"] = len(app.cves)
+            tmp['cves'] = list(tmp['cves'])
+            tmp["cve_count"] = len(tmp['cves'])
         else:
             tmp['cve_count'] = 0
         # pprint(tmp)

@@ -3,20 +3,15 @@ import operator
 import re
 from functools import reduce
 from pprint import pprint
-
-import aiohttp
-import motor.motor_asyncio
 import pymongo
 import requests
 from bs4 import BeautifulSoup
-from odmantic import AIOEngine
 
 from app.core.celery_app import celery_app
 from app.core.config import settings
-from app.models.apps import AppSpider
 
 
-async def get_matching_records(product, vendor=None, version='-'):
+def get_matching_records(product, vendor=None, version='-'):
     url = 'https://nvd.nist.gov/vuln/search/results'
     try:
         if vendor:
@@ -29,11 +24,11 @@ async def get_matching_records(product, vendor=None, version='-'):
                 "query": f"cpe:2.3:a::{product}:{version}:*:*:*:*:*:*:*",
                 "startIndex": 0
             }
-        async with aiohttp.request('GET', url) as resp:
-            text = await resp.text()
-        # print(f"text: {text}")
-        soup = BeautifulSoup(text, "html.parser")
-        # print(f"soup: {soup}")
+        r = requests.get(url, params=params)
+        r.raise_for_status()
+        r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, "html.parser")
+        r.close()
         matching_records = soup.find('strong', attrs={'data-testid': 'vuln-matching-records-count'}).get_text()
         matching_records = matching_records.replace(',', '')
         matching_records = int(matching_records)
@@ -48,7 +43,7 @@ async def get_matching_records(product, vendor=None, version='-'):
         return None
 
 
-async def get_one_page(index, product, vendor=None, version='-'):
+def get_one_page(index, product, vendor=None, version='-'):
     url = 'https://nvd.nist.gov/vuln/search/results'
     try:
         cve_info = []
@@ -62,9 +57,11 @@ async def get_one_page(index, product, vendor=None, version='-'):
                 "query": f"cpe:2.3:a::{product}:{version}:*:*:*:*:*:*:*",
                 "startIndex": index
             }
-        async with aiohttp.request('GET', url) as resp:
-            text = await resp.text()
-        soup = BeautifulSoup(text, "html.parser")
+        r = requests.get(url, params=params)
+        r.raise_for_status()
+        r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, "html.parser")
+        r.close()
         trs = soup.find_all('tr', attrs={'data-testid': re.compile(r'vuln-row-(\d+)?')})
         """
         text
@@ -113,11 +110,11 @@ async def get_one_page(index, product, vendor=None, version='-'):
         return []
 
 
-async def get_all_page(start_indexes, app):
+def get_all_page(start_indexes, app):
     res = []
     for start_index in start_indexes:
         print(f'start_index: {start_index}')
-        res.append(await get_one_page(start_index, **app))
+        res.append(get_one_page(start_index, **app))
     # res = [get_one_page(start_index, **app) for start_index in start_indexes]
     # with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
     #     res.extend(executor.map(partial(get_one_page, **app), start_indexes))
@@ -125,7 +122,7 @@ async def get_all_page(start_indexes, app):
     return res
 
 
-async def handle_app_info(app):
+def handle_app_info(app):
     handled_app = {}
     product = app.get('product')
     version = app.get('version')
@@ -170,51 +167,61 @@ async def handle_app_info(app):
 
 
 def get_one_app(app, update):
-    client = motor.motor_asyncio.AsyncIOMotorClient(host=settings.MONGO_HOST)
-    engine = AIOEngine(motor_client=client, database='cves')
-    # 应用名称、版本确定唯一一条数据
-    app_ins = await engine.find_one(AppSpider, AppSpider.product == app.get('product'),
-                                    AppSpider.version == app.get('version'), AppSpider.vendor == app.get('vendor'))
-    # print(f'get_one_app res: {res}')
-    if app_ins is None or update:
-        # 没有记录，启动爬虫
-        print("=================================================================================>Running in spider")
-        # 对app信息进行NVD查询友好性处理
-        handled_app = await handle_app_info(app)
-        matching_records = await get_matching_records(**handled_app)
-        print(f'NVD matching records: {matching_records}')
-        if matching_records:
-            pages = matching_records // 20 + 1
-            start_indexes = []
-            for i in range(pages):
-                start_indexes.append(i * 20)
-            res = {'vendor': app.get('vendor'), 'product': app.get('product'),
-                   'version': app.get('version'),
-                   'cves': await get_all_page(start_indexes, handled_app)}
-            print('*' * 40)
-            print(f'Get one product res len: {len(res["cves"])}')
-            print('*' * 40)
+    client = pymongo.MongoClient(host=settings.MONGO_HOST)
+    try:
+        db = client.cves
+        collection = db.app_spider
+        # 应用名称、版本确定唯一一条数据
+        query = {'product': app.get('product'), 'version': app.get('version'), 'vendor': app.get('vendor')}
+        res = collection.find_one(query)
+        # print(f'get_one_app res: {res}')
+        if res is None or update:
+            # 没有记录，启动爬虫
+            print("=================================================================================>Running in spider")
+            # 对app信息进行NVD查询友好性处理
+            handled_app = handle_app_info(app)
+            matching_records = get_matching_records(**handled_app)
+            print(f'NVD matching records: {matching_records}')
+            if matching_records:
+                pages = matching_records // 20 + 1
+                start_indexes = []
+                for i in range(pages):
+                    start_indexes.append(i * 20)
+                res = {'vendor': app.get('vendor'), 'product': app.get('product'),
+                       'version': app.get('version'),
+                       'cves': get_all_page(start_indexes, handled_app)}
+                print('*' * 40)
+                print(f'Get one product res len: {len(res["cves"])}')
+                print('*' * 40)
+            else:
+                # NATIONAL VULNERABILITY DATABASE没有收录此版本信息 cve为None
+                res = {'vendor': app.get('vendor'), 'product': app.get('product'),
+                       'version': app.get('version'), 'cves': None}
+                print('*' * 40)
+                print('Get one product res len: 0')
+                print('*' * 40)
+            # 数据入库
+            if update:
+                new = {"$set": res}
+                collection.update_one(query, new, upsert=True)
+            else:
+                collection.insert_one(res)
+            print(f'{res["product"]} spider res: {res}')
+            print('======================================================================================>Running over')
+            return res
         else:
-            # NATIONAL VULNERABILITY DATABASE没有收录此版本信息 cve为None
-            res = {'vendor': app.get('vendor'), 'product': app.get('product'),
-                   'version': app.get('version'), 'cves': None}
-            print('*' * 40)
-            print('Get one product res len: 0')
-            print('*' * 40)
-        # 数据入库
-        if update and app_ins:
-            app_ins.cves = res.get('cves')
-            await engine.save(app_ins)
-        else:
-            new_ins = AppSpider(**res)
-            await engine.save(new_ins)
-        print(f'{res["product"]} spider res: {res}')
-        print('======================================================================================>Running over')
-        return res
-    else:
-        # apps库中有记录直接返回 或者查看更新标志是否需要更新数据
-        print(f"{app.get('product')} has a record")
-        return app_ins
+            # apps库中有记录直接返回 或者查看更新标志是否需要更新数据
+            print(f"{app.get('product')} has a record")
+            return res
+    except Exception as err:
+        # 爬取过程中报错 返回None
+        print('running in get_one_app err')
+        print(err)
+        print('Failed')
+        return {"vendor": app.get('vendor'), "product": app.get('product'),
+                "version": app.get('version'), 'cves': None}
+    finally:
+        client.close()
 
 
 def get_all_app(apps, update):
@@ -244,4 +251,64 @@ def spider(data):
         start = end
         end += 20
         length -= 20
+        # print(f"length: {length}")
+    # print(f'collect app count: {len(res["apps"])}')
+    # print('=====================================Result=================================================')
+    # pprint(res['apps'])
+    # count = 0
+    # for app in res['apps']:
+    #     if app['cves']:
+    #         count += 1
+    # print(f'Collect count: {count}')
+    # write_data_to_db(res)
 
+
+if __name__ == '__main__':
+    data = {
+        "apps": [
+
+        ]
+    }
+
+    url = 'http://10.176.48.180:8080/api/software_risk/apps/software/'
+
+    headers = {
+        "Authorization": "Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjAzMjQ0ODcwL"
+                         "CJleHAiOjE2MDM2NzY4NzAsInVzZXJfaWQiOjMsIm9yaWdfaWF0IjoxNjAzMjQ0ODcwfQ.pJx1Xmu7KYMKJuonK0b1aA"
+                         "yPSSOq3KKGW0kXFPwR1JU"
+    }
+
+    params = {
+        "page": 1,
+        "page_size": 100
+    }
+    r = requests.get(url, headers=headers, params=params)
+    response_data = r.json()
+    count = response_data['count']
+    results = response_data['results']
+    for result in results:
+        tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
+        data['apps'].append(tmp)
+    pages = count // 100 + 1
+    for page in range(2, pages + 1):
+        params = {
+            "page": page,
+            "page_size": 100
+        }
+        r = requests.get(url, headers=headers, params=params)
+        response_data = r.json()
+        # count = response_data['count']
+        results = response_data['results']
+        for result in results:
+            tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
+            data['apps'].append(tmp)
+
+    # pprint(data)
+    # print(len(data['apps']))
+    data['update'] = True
+    print(f'data: {data}')
+    import time
+
+    start = time.time()
+    spider(data)
+    print(f"Total running time: {time.time() - start}")
