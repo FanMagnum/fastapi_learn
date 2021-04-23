@@ -15,10 +15,10 @@ class Settings(BaseSettings):
     # # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     # BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-    MONGO_HOST: str = "10.176.48.190"
+    MONGO_HOST: str = "127.0.0.1"
     CELERY_RESULT_BACKEND: Any
     CELERY_NAME: str = 'worker'
-    BROKER_URL: Any = 'redis://:letMEin26379+1111@10.176.48.180:27490/9'
+    BROKER_URL: Any = 'redis://:password@127.0.0.1:27490/10'
 
     class Config:
         case_sensitive = True

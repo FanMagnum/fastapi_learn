@@ -41,6 +41,22 @@ class SpiderResponse(BaseModel):
         schema_extra = {
             "example": {
                 "message": "success",
-                "task_id": "Abcd234Tre"
+                "task_id": "3a7c3baaecbc4cf1b962c94bbd709a65"
             }
         }
+
+
+class Cve(BaseModel):
+    cve: str
+    summary: str
+    detail: str
+    level: str
+    published: str
+    score: float
+
+
+class AppCve(App):
+    cves: Optional[List[Cve]] = None
+    cve_count: int
+
+

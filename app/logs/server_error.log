@@ -1,0 +1,285 @@
+[2020-11-10 13:57:03 +0800] [14234] [INFO] Starting gunicorn 20.0.4
+[2020-11-10 13:57:03 +0800] [14234] [INFO] Listening at: http://0.0.0.0:80 (14234)
+[2020-11-10 13:57:03 +0800] [14234] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-10 13:57:03 +0800] [14237] [INFO] Booting worker with pid: 14237
+[2020-11-10 13:57:03 +0800] [14238] [INFO] Booting worker with pid: 14238
+[2020-11-10 13:57:03 +0800] [14239] [INFO] Booting worker with pid: 14239
+[2020-11-10 13:57:03 +0800] [14240] [INFO] Booting worker with pid: 14240
+[2020-11-10 13:57:03 +0800] [14237] [INFO] Started server process [14237]
+[2020-11-10 13:57:03 +0800] [14237] [INFO] Waiting for application startup.
+[2020-11-10 13:57:03 +0800] [14237] [INFO] Application startup complete.
+[2020-11-10 13:57:03 +0800] [14239] [INFO] Started server process [14239]
+[2020-11-10 13:57:03 +0800] [14239] [INFO] Waiting for application startup.
+[2020-11-10 13:57:03 +0800] [14239] [INFO] Application startup complete.
+[2020-11-10 13:57:03 +0800] [14240] [INFO] Started server process [14240]
+[2020-11-10 13:57:03 +0800] [14240] [INFO] Waiting for application startup.
+[2020-11-10 13:57:03 +0800] [14238] [INFO] Started server process [14238]
+[2020-11-10 13:57:03 +0800] [14240] [INFO] Application startup complete.
+[2020-11-10 13:57:03 +0800] [14238] [INFO] Waiting for application startup.
+[2020-11-10 13:57:03 +0800] [14238] [INFO] Application startup complete.
+[2020-11-10 15:18:43 +0800] [19041] [INFO] Starting gunicorn 20.0.4
+[2020-11-10 15:18:43 +0800] [19041] [INFO] Listening at: http://0.0.0.0:8000 (19041)
+[2020-11-10 15:18:43 +0800] [19041] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-10 15:18:43 +0800] [19044] [INFO] Booting worker with pid: 19044
+[2020-11-10 15:18:43 +0800] [19045] [INFO] Booting worker with pid: 19045
+[2020-11-10 15:18:43 +0800] [19046] [INFO] Booting worker with pid: 19046
+[2020-11-10 15:18:43 +0800] [19050] [INFO] Booting worker with pid: 19050
+[2020-11-10 15:18:43 +0800] [19044] [INFO] Started server process [19044]
+[2020-11-10 15:18:43 +0800] [19044] [INFO] Waiting for application startup.
+[2020-11-10 15:18:43 +0800] [19044] [INFO] Application startup complete.
+[2020-11-10 15:18:43 +0800] [19045] [INFO] Started server process [19045]
+[2020-11-10 15:18:43 +0800] [19045] [INFO] Waiting for application startup.
+[2020-11-10 15:18:43 +0800] [19045] [INFO] Application startup complete.
+[2020-11-10 15:18:43 +0800] [19046] [INFO] Started server process [19046]
+[2020-11-10 15:18:43 +0800] [19046] [INFO] Waiting for application startup.
+[2020-11-10 15:18:43 +0800] [19046] [INFO] Application startup complete.
+[2020-11-10 15:18:43 +0800] [19050] [INFO] Started server process [19050]
+[2020-11-10 15:18:43 +0800] [19050] [INFO] Waiting for application startup.
+[2020-11-10 15:18:43 +0800] [19050] [INFO] Application startup complete.
+[2020-11-10 21:09:43 +0800] [19050] [ERROR] Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/uvicorn/protocols/http/h11_impl.py", line 388, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/uvicorn/middleware/proxy_headers.py", line 45, in __call__
+    return await self.app(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/fastapi/applications.py", line 179, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/applications.py", line 111, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/middleware/errors.py", line 181, in __call__
+    raise exc from None
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/middleware/errors.py", line 159, in __call__
+    await self.app(scope, receive, _send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/exceptions.py", line 82, in __call__
+    raise exc from None
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/exceptions.py", line 71, in __call__
+    await self.app(scope, receive, sender)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/routing.py", line 566, in __call__
+    await route.handle(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/routing.py", line 227, in handle
+    await self.app(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/routing.py", line 44, in app
+    await response(scope, receive, send)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/responses.py", line 142, in __call__
+    await self.background()
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/background.py", line 35, in __call__
+    await task()
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/background.py", line 20, in __call__
+    await run_in_threadpool(self.func, *self.args, **self.kwargs)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await loop.run_in_executor(None, func, *args)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/PythonProject/spider_cve_server/app/bgtasks/generate_report.py", line 28, in data2file
+    raw_data = json.load(f)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/json/__init__.py", line 296, in load
+    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/json/__init__.py", line 348, in loads
+    return _default_decoder.decode(s)
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/root/anaconda3/envs/spider_server/lib/python3.7/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting ':' delimiter: line 1 column 355885 (char 355884)
+[2020-11-11 09:35:39 +0800] [26463] [INFO] Starting gunicorn 20.0.4
+[2020-11-11 09:35:39 +0800] [26463] [INFO] Listening at: http://0.0.0.0:8000 (26463)
+[2020-11-11 09:35:39 +0800] [26463] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-11 09:35:39 +0800] [26472] [INFO] Booting worker with pid: 26472
+[2020-11-11 09:35:39 +0800] [26473] [INFO] Booting worker with pid: 26473
+[2020-11-11 09:35:39 +0800] [26474] [INFO] Booting worker with pid: 26474
+[2020-11-11 09:35:39 +0800] [26475] [INFO] Booting worker with pid: 26475
+[2020-11-11 09:35:41 +0800] [26472] [INFO] Started server process [26472]
+[2020-11-11 09:35:41 +0800] [26472] [INFO] Waiting for application startup.
+[2020-11-11 09:35:41 +0800] [26475] [INFO] Started server process [26475]
+[2020-11-11 09:35:41 +0800] [26475] [INFO] Waiting for application startup.
+[2020-11-11 09:35:41 +0800] [26472] [INFO] Application startup complete.
+[2020-11-11 09:35:41 +0800] [26475] [INFO] Application startup complete.
+[2020-11-11 09:35:41 +0800] [26473] [INFO] Started server process [26473]
+[2020-11-11 09:35:41 +0800] [26473] [INFO] Waiting for application startup.
+[2020-11-11 09:35:41 +0800] [26473] [INFO] Application startup complete.
+[2020-11-11 09:35:41 +0800] [26474] [INFO] Started server process [26474]
+[2020-11-11 09:35:41 +0800] [26474] [INFO] Waiting for application startup.
+[2020-11-11 09:35:41 +0800] [26474] [INFO] Application startup complete.
+[2020-11-11 16:16:15 +0800] [26463] [INFO] Handling signal: hup
+[2020-11-11 16:16:15 +0800] [26463] [INFO] Hang up: Master
+[2020-11-11 16:16:15 +0800] [26474] [INFO] Shutting down
+[2020-11-11 16:16:15 +0800] [26473] [INFO] Shutting down
+[2020-11-11 16:16:15 +0800] [26472] [INFO] Shutting down
+[2020-11-11 16:16:15 +0800] [26475] [INFO] Shutting down
+[2020-11-11 16:16:15 +0800] [26463] [INFO] Handling signal: term
+[2020-11-11 16:16:15 +0800] [15141] [INFO] Booting worker with pid: 15141
+[2020-11-11 16:16:15 +0800] [15147] [INFO] Booting worker with pid: 15147
+[2020-11-11 16:16:15 +0800] [15142] [INFO] Booting worker with pid: 15142
+[2020-11-11 16:16:15 +0800] [15146] [INFO] Booting worker with pid: 15146
+[2020-11-11 16:16:16 +0800] [26474] [INFO] Finished server process [26474]
+[2020-11-11 16:16:16 +0800] [26474] [INFO] Worker exiting (pid: 26474)
+[2020-11-11 16:16:16 +0800] [26472] [INFO] Finished server process [26472]
+[2020-11-11 16:16:16 +0800] [26472] [INFO] Worker exiting (pid: 26472)
+[2020-11-11 16:16:16 +0800] [26473] [INFO] Finished server process [26473]
+[2020-11-11 16:16:16 +0800] [26473] [INFO] Worker exiting (pid: 26473)
+[2020-11-11 16:16:16 +0800] [26475] [INFO] Finished server process [26475]
+[2020-11-11 16:16:16 +0800] [26475] [INFO] Worker exiting (pid: 26475)
+[2020-11-11 16:16:34 +0800] [15147] [INFO] Started server process [15147]
+[2020-11-11 16:16:34 +0800] [15142] [INFO] Started server process [15142]
+[2020-11-11 16:16:34 +0800] [15147] [INFO] Waiting for application startup.
+[2020-11-11 16:16:34 +0800] [15142] [INFO] Waiting for application startup.
+[2020-11-11 16:16:34 +0800] [15141] [INFO] Started server process [15141]
+[2020-11-11 16:16:34 +0800] [15141] [INFO] Waiting for application startup.
+[2020-11-11 16:16:34 +0800] [15146] [INFO] Started server process [15146]
+[2020-11-11 16:16:34 +0800] [15147] [INFO] Application startup complete.
+[2020-11-11 16:16:34 +0800] [15142] [INFO] Application startup complete.
+[2020-11-11 16:16:34 +0800] [15146] [INFO] Waiting for application startup.
+[2020-11-11 16:16:34 +0800] [15141] [INFO] Application startup complete.
+[2020-11-11 16:16:34 +0800] [15146] [INFO] Application startup complete.
+[2020-11-11 16:16:46 +0800] [26463] [INFO] Shutting down: Master
+[2020-11-11 16:26:59 +0800] [4608] [INFO] Starting gunicorn 20.0.4
+[2020-11-11 16:26:59 +0800] [4608] [INFO] Listening at: http://0.0.0.0:8000 (4608)
+[2020-11-11 16:26:59 +0800] [4608] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-11 16:26:59 +0800] [4612] [INFO] Booting worker with pid: 4612
+[2020-11-11 16:26:59 +0800] [4613] [INFO] Booting worker with pid: 4613
+[2020-11-11 16:26:59 +0800] [4614] [INFO] Booting worker with pid: 4614
+[2020-11-11 16:26:59 +0800] [4615] [INFO] Booting worker with pid: 4615
+[2020-11-11 16:27:00 +0800] [4614] [INFO] Started server process [4614]
+[2020-11-11 16:27:00 +0800] [4612] [INFO] Started server process [4612]
+[2020-11-11 16:27:00 +0800] [4614] [INFO] Waiting for application startup.
+[2020-11-11 16:27:00 +0800] [4612] [INFO] Waiting for application startup.
+[2020-11-11 16:27:00 +0800] [4614] [INFO] Application startup complete.
+[2020-11-11 16:27:00 +0800] [4612] [INFO] Application startup complete.
+[2020-11-11 16:27:00 +0800] [4613] [INFO] Started server process [4613]
+[2020-11-11 16:27:00 +0800] [4615] [INFO] Started server process [4615]
+[2020-11-11 16:27:00 +0800] [4613] [INFO] Waiting for application startup.
+[2020-11-11 16:27:00 +0800] [4615] [INFO] Waiting for application startup.
+[2020-11-11 16:27:00 +0800] [4613] [INFO] Application startup complete.
+[2020-11-11 16:27:00 +0800] [4615] [INFO] Application startup complete.
+[2020-11-14 09:36:25 +0800] [1332] [INFO] Starting gunicorn 20.0.4
+[2020-11-14 09:36:25 +0800] [1332] [INFO] Listening at: http://0.0.0.0:8000 (1332)
+[2020-11-14 09:36:25 +0800] [1332] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-14 09:36:25 +0800] [1336] [INFO] Booting worker with pid: 1336
+[2020-11-14 09:36:25 +0800] [1343] [INFO] Booting worker with pid: 1343
+[2020-11-14 09:36:25 +0800] [1347] [INFO] Booting worker with pid: 1347
+[2020-11-14 09:36:25 +0800] [1348] [INFO] Booting worker with pid: 1348
+[2020-11-14 09:36:26 +0800] [1343] [INFO] Started server process [1343]
+[2020-11-14 09:36:26 +0800] [1348] [INFO] Started server process [1348]
+[2020-11-14 09:36:26 +0800] [1347] [INFO] Started server process [1347]
+[2020-11-14 09:36:26 +0800] [1336] [INFO] Started server process [1336]
+[2020-11-14 09:36:26 +0800] [1343] [INFO] Waiting for application startup.
+[2020-11-14 09:36:26 +0800] [1348] [INFO] Waiting for application startup.
+[2020-11-14 09:36:26 +0800] [1347] [INFO] Waiting for application startup.
+[2020-11-14 09:36:26 +0800] [1336] [INFO] Waiting for application startup.
+[2020-11-14 09:36:26 +0800] [1347] [INFO] Application startup complete.
+[2020-11-14 09:36:26 +0800] [1343] [INFO] Application startup complete.
+[2020-11-14 09:36:26 +0800] [1348] [INFO] Application startup complete.
+[2020-11-14 09:36:26 +0800] [1336] [INFO] Application startup complete.
+[2020-11-14 11:00:40 +0800] [1332] [CRITICAL] WORKER TIMEOUT (pid:1348)
+[2020-11-14 11:00:40 +0800] [30854] [INFO] Booting worker with pid: 30854
+[2020-11-14 11:00:41 +0800] [30854] [INFO] Started server process [30854]
+[2020-11-14 11:00:41 +0800] [30854] [INFO] Waiting for application startup.
+[2020-11-14 11:00:41 +0800] [30854] [INFO] Application startup complete.
+[2020-11-16 09:19:12 +0000] [2318016] [INFO] Starting gunicorn 20.0.4
+[2020-11-16 09:19:12 +0000] [2318016] [INFO] Listening at: http://0.0.0.0:9090 (2318016)
+[2020-11-16 09:19:12 +0000] [2318016] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-16 09:19:12 +0000] [2318019] [INFO] Booting worker with pid: 2318019
+[2020-11-16 09:19:12 +0000] [2318020] [INFO] Booting worker with pid: 2318020
+[2020-11-16 09:19:12 +0000] [2318021] [INFO] Booting worker with pid: 2318021
+[2020-11-16 09:19:12 +0000] [2318022] [INFO] Booting worker with pid: 2318022
+[2020-11-16 09:19:13 +0000] [2318020] [INFO] Started server process [2318020]
+[2020-11-16 09:19:13 +0000] [2318020] [INFO] Waiting for application startup.
+[2020-11-16 09:19:13 +0000] [2318020] [INFO] Application startup complete.
+[2020-11-16 09:19:13 +0000] [2318019] [INFO] Started server process [2318019]
+[2020-11-16 09:19:13 +0000] [2318019] [INFO] Waiting for application startup.
+[2020-11-16 09:19:13 +0000] [2318019] [INFO] Application startup complete.
+[2020-11-16 09:19:13 +0000] [2318021] [INFO] Started server process [2318021]
+[2020-11-16 09:19:13 +0000] [2318021] [INFO] Waiting for application startup.
+[2020-11-16 09:19:13 +0000] [2318021] [INFO] Application startup complete.
+[2020-11-16 09:19:13 +0000] [2318022] [INFO] Started server process [2318022]
+[2020-11-16 09:19:13 +0000] [2318022] [INFO] Waiting for application startup.
+[2020-11-16 09:19:13 +0000] [2318022] [INFO] Application startup complete.
+[2020-11-16 09:31:56 +0000] [2318343] [INFO] Starting gunicorn 20.0.4
+[2020-11-16 09:31:56 +0000] [2318343] [ERROR] Connection in use: ('0.0.0.0', 9000)
+[2020-11-16 09:31:56 +0000] [2318343] [ERROR] Retrying in 1 second.
+[2020-11-16 09:31:57 +0000] [2318343] [ERROR] Connection in use: ('0.0.0.0', 9000)
+[2020-11-16 09:31:57 +0000] [2318343] [ERROR] Retrying in 1 second.
+[2020-11-16 09:31:58 +0000] [2318343] [ERROR] Connection in use: ('0.0.0.0', 9000)
+[2020-11-16 09:31:58 +0000] [2318343] [ERROR] Retrying in 1 second.
+[2020-11-16 09:31:59 +0000] [2318343] [ERROR] Connection in use: ('0.0.0.0', 9000)
+[2020-11-16 09:31:59 +0000] [2318343] [ERROR] Retrying in 1 second.
+[2020-11-16 09:32:00 +0000] [2318343] [ERROR] Connection in use: ('0.0.0.0', 9000)
+[2020-11-16 09:32:00 +0000] [2318343] [ERROR] Retrying in 1 second.
+[2020-11-16 09:32:01 +0000] [2318343] [ERROR] Can't connect to ('0.0.0.0', 9000)
+[2020-11-16 09:38:10 +0000] [2318582] [INFO] Starting gunicorn 20.0.4
+[2020-11-16 09:38:10 +0000] [2318582] [INFO] Listening at: http://0.0.0.0:10000 (2318582)
+[2020-11-16 09:38:10 +0000] [2318582] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-16 09:38:10 +0000] [2318585] [INFO] Booting worker with pid: 2318585
+[2020-11-16 09:38:10 +0000] [2318586] [INFO] Booting worker with pid: 2318586
+[2020-11-16 09:38:10 +0000] [2318587] [INFO] Booting worker with pid: 2318587
+[2020-11-16 09:38:10 +0000] [2318589] [INFO] Booting worker with pid: 2318589
+[2020-11-16 09:38:11 +0000] [2318585] [INFO] Started server process [2318585]
+[2020-11-16 09:38:11 +0000] [2318585] [INFO] Waiting for application startup.
+[2020-11-16 09:38:11 +0000] [2318585] [INFO] Application startup complete.
+[2020-11-16 09:38:11 +0000] [2318586] [INFO] Started server process [2318586]
+[2020-11-16 09:38:11 +0000] [2318586] [INFO] Waiting for application startup.
+[2020-11-16 09:38:11 +0000] [2318586] [INFO] Application startup complete.
+[2020-11-16 09:38:11 +0000] [2318589] [INFO] Started server process [2318589]
+[2020-11-16 09:38:11 +0000] [2318589] [INFO] Waiting for application startup.
+[2020-11-16 09:38:11 +0000] [2318589] [INFO] Application startup complete.
+[2020-11-16 09:38:11 +0000] [2318587] [INFO] Started server process [2318587]
+[2020-11-16 09:38:11 +0000] [2318587] [INFO] Waiting for application startup.
+[2020-11-16 09:38:11 +0000] [2318587] [INFO] Application startup complete.
+[2020-11-17 09:19:13 +0000] [2354503] [INFO] Starting gunicorn 20.0.4
+[2020-11-17 09:19:13 +0000] [2354503] [INFO] Listening at: http://0.0.0.0:10000 (2354503)
+[2020-11-17 09:19:13 +0000] [2354503] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-17 09:19:13 +0000] [2354506] [INFO] Booting worker with pid: 2354506
+[2020-11-17 09:19:13 +0000] [2354507] [INFO] Booting worker with pid: 2354507
+[2020-11-17 09:19:13 +0000] [2354508] [INFO] Booting worker with pid: 2354508
+[2020-11-17 09:19:13 +0000] [2354509] [INFO] Booting worker with pid: 2354509
+[2020-11-17 09:19:14 +0000] [2354506] [INFO] Started server process [2354506]
+[2020-11-17 09:19:14 +0000] [2354506] [INFO] Waiting for application startup.
+[2020-11-17 09:19:14 +0000] [2354506] [INFO] Application startup complete.
+[2020-11-17 09:19:14 +0000] [2354507] [INFO] Started server process [2354507]
+[2020-11-17 09:19:14 +0000] [2354507] [INFO] Waiting for application startup.
+[2020-11-17 09:19:14 +0000] [2354507] [INFO] Application startup complete.
+[2020-11-17 09:19:14 +0000] [2354509] [INFO] Started server process [2354509]
+[2020-11-17 09:19:14 +0000] [2354509] [INFO] Waiting for application startup.
+[2020-11-17 09:19:14 +0000] [2354509] [INFO] Application startup complete.
+[2020-11-17 09:19:14 +0000] [2354508] [INFO] Started server process [2354508]
+[2020-11-17 09:19:14 +0000] [2354508] [INFO] Waiting for application startup.
+[2020-11-17 09:19:14 +0000] [2354508] [INFO] Application startup complete.
+[2020-11-17 11:34:48 +0000] [2358110] [INFO] Starting gunicorn 20.0.4
+[2020-11-17 11:34:48 +0000] [2358110] [INFO] Listening at: http://0.0.0.0:10000 (2358110)
+[2020-11-17 11:34:48 +0000] [2358110] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-17 11:34:48 +0000] [2358113] [INFO] Booting worker with pid: 2358113
+[2020-11-17 11:34:48 +0000] [2358114] [INFO] Booting worker with pid: 2358114
+[2020-11-17 11:34:48 +0000] [2358115] [INFO] Booting worker with pid: 2358115
+[2020-11-17 11:34:48 +0000] [2358116] [INFO] Booting worker with pid: 2358116
+[2020-11-17 11:34:48 +0000] [2358113] [INFO] Started server process [2358113]
+[2020-11-17 11:34:48 +0000] [2358113] [INFO] Waiting for application startup.
+[2020-11-17 11:34:48 +0000] [2358113] [INFO] Application startup complete.
+[2020-11-17 11:34:48 +0000] [2358116] [INFO] Started server process [2358116]
+[2020-11-17 11:34:48 +0000] [2358116] [INFO] Waiting for application startup.
+[2020-11-17 11:34:48 +0000] [2358116] [INFO] Application startup complete.
+[2020-11-17 11:34:48 +0000] [2358114] [INFO] Started server process [2358114]
+[2020-11-17 11:34:48 +0000] [2358114] [INFO] Waiting for application startup.
+[2020-11-17 11:34:48 +0000] [2358114] [INFO] Application startup complete.
+[2020-11-17 11:34:48 +0000] [2358115] [INFO] Started server process [2358115]
+[2020-11-17 11:34:48 +0000] [2358115] [INFO] Waiting for application startup.
+[2020-11-17 11:34:48 +0000] [2358115] [INFO] Application startup complete.
+[2020-11-18 14:43:48 +0000] [2358115] [WARNING] Invalid HTTP request received.
+[2020-11-20 02:52:40 +0000] [2454452] [INFO] Starting gunicorn 20.0.4
+[2020-11-20 02:52:40 +0000] [2454452] [INFO] Listening at: http://0.0.0.0:10000 (2454452)
+[2020-11-20 02:52:40 +0000] [2454452] [INFO] Using worker: uvicorn.workers.UvicornH11Worker
+[2020-11-20 02:52:40 +0000] [2454455] [INFO] Booting worker with pid: 2454455
+[2020-11-20 02:52:40 +0000] [2454456] [INFO] Booting worker with pid: 2454456
+[2020-11-20 02:52:40 +0000] [2454457] [INFO] Booting worker with pid: 2454457
+[2020-11-20 02:52:40 +0000] [2454458] [INFO] Booting worker with pid: 2454458
+[2020-11-20 02:52:40 +0000] [2454456] [INFO] Started server process [2454456]
+[2020-11-20 02:52:40 +0000] [2454456] [INFO] Waiting for application startup.
+[2020-11-20 02:52:40 +0000] [2454456] [INFO] Application startup complete.
+[2020-11-20 02:52:40 +0000] [2454455] [INFO] Started server process [2454455]
+[2020-11-20 02:52:40 +0000] [2454455] [INFO] Waiting for application startup.
+[2020-11-20 02:52:40 +0000] [2454455] [INFO] Application startup complete.
+[2020-11-20 02:52:41 +0000] [2454457] [INFO] Started server process [2454457]
+[2020-11-20 02:52:41 +0000] [2454457] [INFO] Waiting for application startup.
+[2020-11-20 02:52:41 +0000] [2454457] [INFO] Application startup complete.
+[2020-11-20 02:52:41 +0000] [2454458] [INFO] Started server process [2454458]
+[2020-11-20 02:52:41 +0000] [2454458] [INFO] Waiting for application startup.
+[2020-11-20 02:52:41 +0000] [2454458] [INFO] Application startup complete.

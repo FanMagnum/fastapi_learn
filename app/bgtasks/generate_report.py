@@ -4,6 +4,7 @@ from os import path
 from pymongo import MongoClient
 
 from app.core.config import settings
+from app.core.log import logger
 
 
 def data2file():
@@ -29,14 +30,8 @@ def data2file():
             # Data has been changed
             with open(f"{path.dirname(path.dirname(current_path))}/result.json", "w") as f:
                 json.dump(data, f)
-                print("report file update successful...")
+                logger.success("report file update successful...")
     finally:
         client.close()
 
 
-if __name__ == '__main__':
-    import time
-
-    start = time.time()
-    data2file()
-    print(f"Running time: {time.time() - start}")

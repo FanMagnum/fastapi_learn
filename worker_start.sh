@@ -1,1 +1,1 @@
-celery worker -A app.bgtasks.nvd_spider.spider -l info -Q spider -c 1
+celery -A app.bgtasks.nvd_spider worker -l info -Q spider -c 1

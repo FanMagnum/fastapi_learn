@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from app.core.celery_app import celery_app
 from app.core.config import settings
+from app.core.log import logger
 
 
 def get_matching_records(product, vendor=None, version='-'):
@@ -35,9 +36,8 @@ def get_matching_records(product, vendor=None, version='-'):
             matching_records = 100
         return matching_records
     except Exception as err:
-        print('running in get_matching_records err')
-        print(err)
-        print('Failed')
+        logger.error('running in get_matching_records err')
+        logger.exception(err)
         return None
 
 
@@ -72,7 +72,7 @@ def get_one_page(index, product, vendor=None, version='-'):
             tr = tr.replace('\n', '').replace('\xa0', '')
             # print(tr)
             find = (
-                re.search(r'(?P<cve>CVE-\d{4}-\d{4,5})(?P<summary>.*?)(?P<published>Published:.*?)(?P<level>V.*)', tr)
+                re.search(r'(?P<cve>CVE-\d{4}-\d{4,5})(?P<summary>.*?)Published:(?P<published>.*?)(?P<level>V.*)', tr)
             )
             find_dict = find.groupdict()
             if 'HIGH' in find_dict['level'] or 'CRITICAL' in find_dict['level']:
@@ -102,16 +102,16 @@ def get_one_page(index, product, vendor=None, version='-'):
                 cve_info.append(tmp)
         return cve_info
     except Exception as err:
-        print('running in get_one_page err')
-        print(err)
-        print('Failed')
+        logger.error('running in get_one_page err')
+        logger.exception(err)
+        # print('Failed')
         return []
 
 
 def get_all_page(start_indexes, app):
     res = []
     for start_index in start_indexes:
-        print(f'start_index: {start_index}')
+        logger.info(f'start_index: {start_index}')
         res.append(get_one_page(start_index, **app))
     # res = [get_one_page(start_index, **app) for start_index in start_indexes]
     # with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
@@ -155,12 +155,12 @@ def handle_app_info(app):
             handled_app['product'] = 'chrome'
 
     if vendor and len(vendor_list) > 1:
-        handled_app['vendor'] = None
+        handled_app['vendor'] = vendor_list[0]
 
     if version and version == '':
         handled_app['version'] = '-'
 
-    print(f'after handle app info: {handled_app}')
+    logger.info(f'after handle app info: {handled_app}')
     return handled_app
 
 
@@ -175,11 +175,12 @@ def get_one_app(app, update):
         # print(f'get_one_app res: {res}')
         if res is None or update:
             # 没有记录，启动爬虫
-            print("=================================================================================>Running in spider")
+            logger.info(
+                "=================================================================================>Running in spider")
             # 对app信息进行NVD查询友好性处理
             handled_app = handle_app_info(app)
             matching_records = get_matching_records(**handled_app)
-            print(f'NVD matching records: {matching_records}')
+            logger.info(f'NVD matching records: {matching_records}')
             if matching_records:
                 pages = matching_records // 20 + 1
                 start_indexes = []
@@ -188,16 +189,16 @@ def get_one_app(app, update):
                 res = {'vendor': app.get('vendor'), 'product': app.get('product'),
                        'version': app.get('version'),
                        'cves': get_all_page(start_indexes, handled_app)}
-                print('*' * 40)
-                print(f'Get one product res len: {len(res["cves"])}')
-                print('*' * 40)
+                logger.info('*' * 40)
+                logger.info(f'Get one product res len: {len(res["cves"])}')
+                logger.info('*' * 40)
             else:
                 # NATIONAL VULNERABILITY DATABASE没有收录此版本信息 cve为None
                 res = {'vendor': app.get('vendor'), 'product': app.get('product'),
                        'version': app.get('version'), 'cves': None}
-                print('*' * 40)
-                print('Get one product res len: 0')
-                print('*' * 40)
+                logger.info('*' * 40)
+                logger.info('Get one product res len: 0')
+                logger.info('*' * 40)
             # 数据入库
             if update:
                 new = {"$set": res}
@@ -205,17 +206,18 @@ def get_one_app(app, update):
             else:
                 collection.insert_one(res)
             # print(f'{res["product"]} spider res: {res}')
-            print('======================================================================================>Running over')
+            logger.info(
+                '======================================================================================>Running over')
             return res
         else:
             # apps库中有记录直接返回 或者查看更新标志是否需要更新数据
-            print(f"{app.get('product')} has a record")
+            logger.info(f"{app.get('product')} has a record")
             return res
     except Exception as err:
         # 爬取过程中报错 返回None
-        print('running in get_one_app err')
-        print(err)
-        print('Failed')
+        logger.error('running in get_one_app err')
+        logger.exception(err)
+        # print('Failed')
         return {"vendor": app.get('vendor'), "product": app.get('product'),
                 "version": app.get('version'), 'cves': None}
     finally:
@@ -225,7 +227,7 @@ def get_one_app(app, update):
 def get_all_app(apps, update):
     res = []
     for app in apps:
-        print(f'before handle app info: {app}')
+        logger.info(f'before handle app info: {app}')
         res.append(get_one_app(app, update))
     # with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
     #     res.extend(executor.map(get_one_app, apps))
@@ -237,7 +239,7 @@ def spider(data):
     # 爬取数据
     # 更新数据到postgreSQL
     # 失败自动重试
-    print('Total apps nums ', len(data['apps']))
+    logger.info(f'Total apps nums: {len(data["apps"])}')
     length = len(data['apps'])
     update = data['update']
     start = 0
@@ -249,4 +251,3 @@ def spider(data):
         start = end
         end += 20
         length -= 20
-
