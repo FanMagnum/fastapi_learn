@@ -1,6 +1,5 @@
 import json
 from os import path
-from pprint import pprint
 
 from pymongo import MongoClient
 
@@ -12,8 +11,7 @@ def data2file():
     current_path = path.dirname(__file__)
     try:
         db = client.cves
-        collection = db.spider
-
+        collection = db.app_spider
         apps = collection.find()
         data = []
         for app in apps:

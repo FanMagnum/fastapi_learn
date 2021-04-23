@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     # BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     MONGO_HOST: str = "10.176.48.190"
+    CELERY_RESULT_BACKEND: Any
+    CELERY_NAME: str = 'worker'
+    BROKER_URL: Any = 'redis://:letMEin26379+1111@10.176.48.180:27490/9'
 
     class Config:
         case_sensitive = True

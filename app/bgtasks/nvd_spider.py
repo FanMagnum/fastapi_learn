@@ -1,12 +1,11 @@
-import concurrent.futures
 import operator
 import re
 from functools import reduce
-from pprint import pprint
 import pymongo
 import requests
 from bs4 import BeautifulSoup
 
+from app.core.celery_app import celery_app
 from app.core.config import settings
 
 
@@ -169,7 +168,7 @@ def get_one_app(app, update):
     client = pymongo.MongoClient(host=settings.MONGO_HOST)
     try:
         db = client.cves
-        collection = db.spider
+        collection = db.app_spider
         # 应用名称、版本确定唯一一条数据
         query = {'product': app.get('product'), 'version': app.get('version'), 'vendor': app.get('vendor')}
         res = collection.find_one(query)
@@ -202,10 +201,10 @@ def get_one_app(app, update):
             # 数据入库
             if update:
                 new = {"$set": res}
-                collection.update_one(query, new)
+                collection.update_one(query, new, upsert=True)
             else:
                 collection.insert_one(res)
-            print(f'{res["product"]} spider res: {res}')
+            # print(f'{res["product"]} spider res: {res}')
             print('======================================================================================>Running over')
             return res
         else:
@@ -233,29 +232,7 @@ def get_all_app(apps, update):
     return res
 
 
-# def write_data_to_db(data):
-#     # client = pymongo.MongoClient(host='localhost')
-#     # print(f"apps to str: {str(data.get('apps'))}")
-#     conn = psycopg2.connect(**postgre_config)
-#     cursor = conn.cursor()
-#     sql = """SELECT * FROM cveinfo where pcid = %s;"""
-#     params = (data.get('pcid'),)
-#     cursor.execute(sql, params)
-#     agent = cursor.fetchone()
-#     # print(f"-------------------agent info: {agent}")
-#     if agent:
-#         sql = """update cveinfo set apps = %s where pcid = %s;"""
-#         params = (json.dumps(data.get('apps')), data.get('pcid'))
-#         print('running in update')
-#     else:
-#         sql = """INSERT INTO cveinfo (pcid, apps) VALUES (%s, %s);"""
-#         params = (data.get('pcid'), json.dumps(data.get('apps')))
-#         print('running in create')
-#     cursor.execute(sql, params)
-#     conn.commit()
-#     conn.close()
-
-
+@celery_app.task(acks_late=True)
 def spider(data):
     # 爬取数据
     # 更新数据到postgreSQL
@@ -272,64 +249,4 @@ def spider(data):
         start = end
         end += 20
         length -= 20
-        # print(f"length: {length}")
-    # print(f'collect app count: {len(res["apps"])}')
-    # print('=====================================Result=================================================')
-    # pprint(res['apps'])
-    # count = 0
-    # for app in res['apps']:
-    #     if app['cves']:
-    #         count += 1
-    # print(f'Collect count: {count}')
-    # write_data_to_db(res)
 
-
-if __name__ == '__main__':
-    data = {
-        "apps": [
-
-        ]
-    }
-
-    url = 'http://10.176.48.180:8080/api/software_risk/apps/software/'
-
-    headers = {
-        "Authorization": "Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjAzMjQ0ODcwL"
-                         "CJleHAiOjE2MDM2NzY4NzAsInVzZXJfaWQiOjMsIm9yaWdfaWF0IjoxNjAzMjQ0ODcwfQ.pJx1Xmu7KYMKJuonK0b1aA"
-                         "yPSSOq3KKGW0kXFPwR1JU"
-    }
-
-    params = {
-        "page": 1,
-        "page_size": 100
-    }
-    r = requests.get(url, headers=headers, params=params)
-    response_data = r.json()
-    count = response_data['count']
-    results = response_data['results']
-    for result in results:
-        tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
-        data['apps'].append(tmp)
-    pages = count // 100 + 1
-    for page in range(2, pages + 1):
-        params = {
-            "page": page,
-            "page_size": 100
-        }
-        r = requests.get(url, headers=headers, params=params)
-        response_data = r.json()
-        # count = response_data['count']
-        results = response_data['results']
-        for result in results:
-            tmp = {'product': result['name'], 'version': result['version'], 'vendor': result['vendor']}
-            data['apps'].append(tmp)
-
-    # pprint(data)
-    # print(len(data['apps']))
-    data['update'] = True
-    print(f'data: {data}')
-    import time
-
-    start = time.time()
-    spider(data)
-    print(f"Total running time: {time.time() - start}")
