@@ -1,6 +1,8 @@
+
 import uuid
 import motor.motor_asyncio
 from odmantic import AIOEngine
+
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.encoders import jsonable_encoder
 
@@ -11,6 +13,7 @@ from app.models.task_id import TaskId
 from app.schemas.apps import Data, SpiderResponse
 
 router = APIRouter()
+
 
 
 async def store_task_id(task_id):
@@ -28,6 +31,7 @@ async def find_task_id(task_id):
         await engine.delete(task)
         return True
     return False
+
 
 
 @router.post(
@@ -50,18 +54,22 @@ async def start_spider(
         - **version**: app version
         - **vendor**: app vendor
     """
+
     task = celery_app.send_task("app.bgtasks.nvd_spider.spider",
                                 args=[jsonable_encoder(data)])
     uid = str(uuid.uuid4())
     task_id = ''.join(uid.split('-'))
     await store_task_id(task_id)
+
     res = {"message": "success", 'task_id': task_id}
     return res
 
 
 @router.get("/report")
 async def generate_report(task_id: str, background_task: BackgroundTasks):
+
     if not await find_task_id(task_id):
+
         raise HTTPException(status_code=400, detail="Invalid task id")
     background_task.add_task(data2file)
     res = {"message": "generate report success", "url": ""}
